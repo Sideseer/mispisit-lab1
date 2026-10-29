@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Новый заказ{% endblock %}
+{% block content %}
+<h1>Новый заказ на перевозку</h1>
+<form class="order-form" method="post" action="/orders/new" novalidate>
+    <label>Откуда <input name="from_city" value="{{ form.from_city or '' }}" placeholder="Ульяновск"></label>
+    <label>Куда <input name="to_city" value="{{ form.to_city or '' }}" placeholder="Самара"></label>
+    <label class="wide">Груз <input name="cargo" value="{{ form.cargo or '' }}" placeholder="Что везём"></label>
+    <label>Вес, т <input name="weight" value="{{ form.weight or '' }}" placeholder="1.5"></label>
+    <label>Цена, ₽ <input name="price" value="{{ form.price or '' }}" placeholder="10000"></label>
+    <label>Дата загрузки <input type="date" name="load_date" value="{{ form.load_date or today }}"></label>
+    <label>Заказчик <input name="customer" value="{{ form.customer or '' }}" placeholder="Название или ФИО"></label>
+    <button type="submit">Опубликовать заказ</button>
+</form>
+{% endblock %}

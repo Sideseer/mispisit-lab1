@@ -3,31 +3,68 @@ body {
     margin: 0;
     min-height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
     font-family: "Segoe UI", Roboto, Arial, sans-serif;
     background: #eef2f7;
     color: #1f2937;
 }
-.card {
-    max-width: 640px;
-    margin: 24px;
-    padding: 40px 48px;
-    background: #ffffff;
-    border-radius: 16px;
-    border-top: 6px solid #f59e0b;
-    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-    text-align: center;
+a { color: #1e3a8a; }
+
+.topbar {
+    display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+    padding: 14px 32px; background: #1e3a8a; color: #fff;
+    border-bottom: 4px solid #f59e0b;
 }
-h1 { margin: 0 0 16px; font-size: 40px; color: #1e3a8a; }
-.description { margin: 0 0 24px; font-size: 18px; line-height: 1.5; }
-.version { margin: 0 0 8px; font-size: 16px; color: #4b5563; }
-.status {
-    display: inline-block;
-    margin: 0;
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: #fef3c7;
-    color: #92400e;
-    font-size: 15px;
+.logo { font-size: 24px; font-weight: 700; color: #fff; text-decoration: none; }
+.menu { display: flex; gap: 6px; flex: 1; }
+.menu a { color: #dbeafe; text-decoration: none; padding: 6px 12px; border-radius: 8px; }
+.menu a:hover, .menu a.active { background: rgba(255,255,255,0.15); color: #fff; }
+.role { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.role select { padding: 4px 8px; border-radius: 6px; border: none; font-size: 14px; }
+
+.page {
+    flex: 1; width: 100%; max-width: 1000px; margin: 24px auto; padding: 32px 40px;
+    background: #fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
+h1 { margin: 0 0 20px; color: #1e3a8a; }
+.footer { text-align: center; padding: 12px; color: #6b7280; font-size: 13px; }
+
+.hero { text-align: center; margin-bottom: 28px; }
+.hero h1 { font-size: 40px; margin-bottom: 12px; }
+.description { font-size: 18px; line-height: 1.5; margin: 0 0 12px; }
+.version { color: #4b5563; margin: 0; }
+.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.action {
+    display: block; padding: 20px; border-radius: 12px; text-decoration: none; color: inherit;
+    background: #f8fafc; border-top: 4px solid #f59e0b;
+}
+.action:hover { background: #fef3c7; }
+.action h2 { margin: 0 0 8px; font-size: 20px; color: #1e3a8a; }
+.action p { margin: 0; line-height: 1.4; }
+
+.orders { width: 100%; border-collapse: collapse; }
+.orders th, .orders td { padding: 10px 8px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+.orders th { background: #f1f5f9; }
+.orders tr.new td { background: #ecfdf5; }
+.hint { color: #6b7280; }
+
+.notice { padding: 12px 16px; border-radius: 10px; }
+.notice.success { background: #d1fae5; color: #065f46; }
+
+.order-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.order-form label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; }
+.order-form .wide { grid-column: span 2; }
+.order-form input { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; font-weight: 400; }
+.order-form button, .button {
+    display: inline-block; padding: 10px 18px; border: none; border-radius: 8px;
+    background: #f59e0b; color: #1f2937; font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer;
+}
+.order-form button { grid-column: span 2; justify-self: start; }
+
+.card-fields { display: grid; grid-template-columns: 180px 1fr; gap: 10px 16px; font-size: 17px; }
+.card-fields dt { font-weight: 600; color: #4b5563; }
+.card-fields dd { margin: 0; }
+
+.denied { border-left: 6px solid #dc2626; padding-left: 20px; }
+.denied h1 { color: #b91c1c; }
+.denied li { margin-bottom: 4px; }
