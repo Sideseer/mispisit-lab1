@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ app_name }}{% endblock %} | {{ app_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+    <a class="logo" href="/">{{ app_name }}</a>
+    <nav class="menu">
+        <a href="/" class="{{ 'active' if path == '/' }}">Главная</a>
+        <a href="/orders" class="{{ 'active' if path == '/orders' or (path.startswith('/orders/') and path != '/orders/new') }}">Заказы</a>
+        <a href="/orders/new" class="{{ 'active' if path == '/orders/new' }}">Новый заказ</a>
+        <a href="/access-denied" class="{{ 'active' if path == '/access-denied' }}">Отказ</a>
+    </nav>
+    <form class="role" method="post" action="/role">
+        <label for="role">Роль:</label>
+        <select id="role" name="role" onchange="this.form.submit()">
+            {% for key, title in roles.items() %}
+            <option value="{{ key }}" {{ 'selected' if key == role }}>{{ title }}</option>
+            {% endfor %}
+        </select>
+        <input type="hidden" name="back" value="{{ path if path != '/access-denied' else '/' }}">
+        <noscript><button type="submit">OK</button></noscript>
+    </form>
+</header>
+<main class="page">
+    {% block content %}{% endblock %}
+</main>
+<footer class="footer">{{ app_name }} · версия {{ version }} · вы вошли как: {{ role_title }}</footer>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Отказ{% endblock %}
+{% block content %}
+<section class="denied">
+    <h1>{% if kind == 'validation' %}Заказ не принят{% elif kind == 'not_found' %}Заказ не найден{% else %}Доступ запрещён{% endif %}</h1>
+    <p><b>Кто пытался:</b> {{ who }}</p>
+    <p><b>Что пытался сделать:</b> {{ action }}</p>
+    <p><b>Почему система не дала это сделать:</b></p>
+    <ul>
+        {% for r in reasons %}<li>{{ r }}</li>{% endfor %}
+    </ul>
+    {% if kind == 'validation' %}
+    <p class="hint">Вернитесь к форме, исправьте данные и отправьте заказ ещё раз.</p>
+    <p><a class="button" href="/orders/new">← К форме заказа</a></p>
+    {% elif kind == 'role' %}
+    <p class="hint">Чтобы создать заказ, переключите роль в шапке на «Заказчик».</p>
+    <p><a class="button" href="/orders">Смотреть заказы</a></p>
+    {% else %}
+    <p><a class="button" href="/orders">← К списку заказов</a></p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Заказ № {{ order.id }}{% endblock %}
+{% block content %}
+<h1>Заказ № {{ order.id }}: {{ order.from_city }} → {{ order.to_city }}</h1>
+<dl class="card-fields">
+    <dt>Откуда</dt><dd>{{ order.from_city }}</dd>
+    <dt>Куда</dt><dd>{{ order.to_city }}</dd>
+    <dt>Груз</dt><dd>{{ order.cargo }}</dd>
+    <dt>Вес</dt><dd>{{ order.weight }} т</dd>
+    <dt>Цена</dt><dd>{{ "{:,}".format(order.price).replace(",", " ") }} ₽</dd>
+    <dt>Дата загрузки</dt><dd>{{ order.load_date }}</dd>
+    <dt>Заказчик</dt><dd>{{ order.customer }}</dd>
+    <dt>Статус</dt><dd>{{ order.status }}</dd>
+</dl>
+<p><a class="button" href="/orders">← К списку заказов</a></p>
+{% endblock %}

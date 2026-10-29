@@ -1,17 +1,23 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ name }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
-</head>
-<body>
-    <main class="card">
-        <h1>{{ name }}</h1>
-        <p class="description">{{ description }}</p>
-        <p class="version">Версия {{ version }}</p>
-        <p class="status">{{ status }}</p>
-    </main>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<section class="hero">
+    <h1>{{ app_name }}</h1>
+    <p class="description">{{ app_description }}</p>
+    <p class="version">Версия {{ version }}</p>
+</section>
+<section class="actions">
+    <a class="action" href="/orders/new">
+        <h2>Создать заказ</h2>
+        <p>Заказчик публикует груз: откуда, куда, вес и цена.</p>
+    </a>
+    <a class="action" href="/orders">
+        <h2>Найти заказ</h2>
+        <p>Водитель смотрит список заказов и открывает карточку нужного.</p>
+    </a>
+    <a class="action" href="/access-denied">
+        <h2>Отказ</h2>
+        <p>Что будет, если водитель попробует создать заказ или данные неверные.</p>
+    </a>
+</section>
+{% endblock %}
