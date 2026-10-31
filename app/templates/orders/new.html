@@ -9,7 +9,8 @@
     <label>Вес, т <input name="weight" value="{{ form.weight or '' }}" placeholder="1.5"></label>
     <label>Цена, ₽ <input name="price" value="{{ form.price or '' }}" placeholder="10000"></label>
     <label>Дата загрузки <input type="date" name="load_date" value="{{ form.load_date or today }}"></label>
-    <label>Заказчик <input name="customer" value="{{ form.customer or '' }}" placeholder="Название или ФИО"></label>
+    <label>Грузоотправитель <input name="shipper" value="{{ form.shipper or '' }}" placeholder="Название или ФИО"></label>
+    <p class="hint wide">Источник заказа: «Сайт ГрузоПоиск» (ставится автоматически).</p>
     <button type="submit">Опубликовать заказ</button>
 </form>
 {% endblock %}

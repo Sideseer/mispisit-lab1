@@ -1,17 +1,30 @@
-"""ГрузоПоиск: каркас приложения (лабораторная работа 2).
+"""ГрузоПоиск: каркас приложения (лабораторная работа 3).
 
 Здесь создаётся приложение FastAPI, подключаются статика, шаблоны
-и маршруты трёх функций из папки routers.
+и маршруты трёх функций из папки routers. При старте приложение
+подключается к базе PostgreSQL и готовит таблицу заказов.
 """
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import APP_NAME, APP_VERSION, BASE_DIR, ROLES
+from app import storage
 from app.routers import errors, orders
 from app.templating import render
 
-app = FastAPI(title=APP_NAME, version=APP_VERSION)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Выполняется один раз при запуске: таблица и демо-заказы в базе."""
+    storage.init_db()
+    yield
+
+
+app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 app.include_router(orders.router)

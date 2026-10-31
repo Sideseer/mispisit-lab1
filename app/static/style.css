@@ -68,3 +68,4 @@ h1 { margin: 0 0 20px; color: #1e3a8a; }
 .denied { border-left: 6px solid #dc2626; padding-left: 20px; }
 .denied h1 { color: #b91c1c; }
 .denied li { margin-bottom: 4px; }
+.nowrap { white-space: nowrap; }

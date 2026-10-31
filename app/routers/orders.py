@@ -5,7 +5,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app import storage
-from app.config import CAN_CREATE_ORDER, ROLES
+from app.config import CAN_CREATE_ORDER, ROLES, SOURCE_SITE
 from app.templating import current_role, render
 
 router = APIRouter(prefix="/orders")
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/orders")
 @router.get("", response_class=HTMLResponse)
 def orders_list(request: Request):
     """Функция 2. Просмотр: список опубликованных заказов, новые сверху."""
-    orders = sorted(storage.load_orders(), key=lambda o: o["id"], reverse=True)
+    orders = storage.load_orders()
     created = request.query_params.get("created")
     return render(request, "orders/list.html", {"orders": orders, "created": created})
 
@@ -37,7 +37,7 @@ def order_create(
     weight: str = Form(""),
     price: str = Form(""),
     load_date: str = Form(""),
-    customer: str = Form(""),
+    shipper: str = Form(""),
 ):
     """Функция 1. Создание заказа. При ошибочных данных показывается страница отказа."""
     role = current_role(request)
@@ -47,7 +47,7 @@ def order_create(
     form = {
         "from_city": from_city.strip(), "to_city": to_city.strip(), "cargo": cargo.strip(),
         "weight": weight.strip(), "price": price.strip(), "load_date": load_date.strip(),
-        "customer": customer.strip(),
+        "shipper": shipper.strip(),
     }
     errors = validate(form)
     if errors:
@@ -66,8 +66,8 @@ def order_create(
         "weight": float(form["weight"].replace(",", ".")),
         "price": int(float(form["price"].replace(",", "."))),
         "load_date": form["load_date"],
-        "customer": form["customer"],
-        "status": "Опубликован",
+        "shipper": form["shipper"],
+        "source": SOURCE_SITE,
     })
     return RedirectResponse(f"/orders?created={order['id']}", status_code=303)
 
@@ -90,7 +90,7 @@ def validate(form: dict) -> list[str]:
     """Проверка формы заказа. Возвращает список причин отказа."""
     errors = []
     names = {"from_city": "Откуда", "to_city": "Куда", "cargo": "Груз", "weight": "Вес",
-             "price": "Цена", "load_date": "Дата загрузки", "customer": "Заказчик"}
+             "price": "Цена", "load_date": "Дата загрузки", "shipper": "Грузоотправитель"}
     for key, title in names.items():
         if not form[key]:
             errors.append(f"Не заполнено поле «{title}».")

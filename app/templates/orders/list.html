@@ -7,7 +7,7 @@
 {% endif %}
 <table class="orders">
     <thead>
-    <tr><th>№</th><th>Маршрут</th><th>Груз</th><th>Вес, т</th><th>Цена, ₽</th><th>Загрузка</th><th>Статус</th></tr>
+    <tr><th>№</th><th>Маршрут</th><th>Груз</th><th class="nowrap">Вес, т</th><th class="nowrap">Цена, ₽</th><th>Загрузка</th><th>Источник</th><th>Статус</th></tr>
     </thead>
     <tbody>
     {% for o in orders %}
@@ -15,9 +15,10 @@
         <td>{{ o.id }}</td>
         <td><a href="/orders/{{ o.id }}">{{ o.from_city }} → {{ o.to_city }}</a></td>
         <td>{{ o.cargo }}</td>
-        <td>{{ o.weight }}</td>
-        <td>{{ "{:,}".format(o.price).replace(",", " ") }}</td>
-        <td>{{ o.load_date }}</td>
+        <td>{{ '%g'|format(o.weight) }}</td>
+        <td class="nowrap">{{ "{:,}".format(o.price).replace(",", " ") }}</td>
+        <td class="nowrap">{{ o.load_date.strftime('%d.%m.%Y') }}</td>
+        <td>{{ o.source }}</td>
         <td>{{ o.status }}</td>
     </tr>
     {% endfor %}
