@@ -3,13 +3,27 @@
 {% block content %}
 <h1>Новый заказ на перевозку</h1>
 <form class="order-form" method="post" action="/orders/new" novalidate>
-    <label>Откуда <input name="from_city" value="{{ form.from_city or '' }}" placeholder="Ульяновск"></label>
-    <label>Куда <input name="to_city" value="{{ form.to_city or '' }}" placeholder="Самара"></label>
-    <label class="wide">Груз <input name="cargo" value="{{ form.cargo or '' }}" placeholder="Что везём"></label>
-    <label>Вес, т <input name="weight" value="{{ form.weight or '' }}" placeholder="1.5"></label>
-    <label>Цена, ₽ <input name="price" value="{{ form.price or '' }}" placeholder="10000"></label>
+    <label class="wide">Название груза <input name="title" value="{{ form.title or '' }}" placeholder="Что везём, например «Мебель для офиса»"></label>
+    <label>Город откуда <input name="city_from" value="{{ form.city_from or '' }}" placeholder="Ульяновск"></label>
+    <label>Город куда <input name="city_to" value="{{ form.city_to or '' }}" placeholder="Самара"></label>
+    <label>Масса, т <input name="weight" value="{{ form.weight or '' }}" placeholder="1.5"></label>
+    <label>Объём, м³ <input name="volume" value="{{ form.volume or '' }}" placeholder="необязательно"></label>
+    <label>Тип кузова
+        <select name="body_type">
+            <option value="">Любой</option>
+            {% for b in body_types %}<option {{ 'selected' if form.body_type == b }}>{{ b }}</option>{% endfor %}
+        </select>
+    </label>
     <label>Дата загрузки <input type="date" name="load_date" value="{{ form.load_date or today }}"></label>
-    <label>Грузоотправитель <input name="shipper" value="{{ form.shipper or '' }}" placeholder="Название или ФИО"></label>
+    <label>Стоимость, руб. <input name="price" value="{{ form.price or '' }}" placeholder="10000"></label>
+    <label>Оплата
+        <select name="payment_type">
+            <option value="">По договорённости</option>
+            {% for p in payment_types %}<option {{ 'selected' if form.payment_type == p }}>{{ p }}</option>{% endfor %}
+        </select>
+    </label>
+    <label class="wide">Контакты грузоотправителя <input name="contacts" value="{{ form.contacts or '' }}" placeholder="Название или ФИО и телефон"></label>
+    <label class="wide">Описание <textarea name="description" rows="2" placeholder="Необязательно: условия погрузки, габариты">{{ form.description or '' }}</textarea></label>
     <p class="hint wide">Источник заказа: «Сайт ГрузоПоиск» (ставится автоматически).</p>
     <button type="submit">Опубликовать заказ</button>
 </form>

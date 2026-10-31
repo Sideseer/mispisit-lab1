@@ -53,31 +53,56 @@ cp .env.example .env       # Windows: copy .env.example .env
   `app` стартует только после того, как база готова (`depends_on: condition: service_healthy`).
 - Данные базы лежат в volume `db-data`, поэтому переживают `docker compose restart` и `docker compose down`.
 - Сайт подключается к базе по адресу из переменной `DATABASE_URL` (хост `db`, это имя сервиса в compose).
-- При старте приложение создаёт таблицу `orders` и, если она пустая, кладёт 3 демо-заказа (`app/storage.py`).
-- Роль «Заказчик» переименована в «Грузоотправитель».
-- У заказа появилось поле «Источник»: откуда агрегатор взял заказ (Сайт ГрузоПоиск, Avito, Telegram).
+- При старте приложение создаёт таблицы `data_sources` и `orders` и, если они пустые, кладёт источники
+  и 3 демо-заказа (`app/storage.py`).
+- Названия таблиц и полей взяты из проекта 3 курса (ЛР5 «Проектирование данных», ER-диаграмма):
+  сущность DataSource это таблица `data_sources`, сущность Order это таблица `orders`
+  (слово ORDER в SQL зарезервировано, поэтому имя во множественном числе).
+- Роли как в ЛР2 3 курса: Водитель, Грузоотправитель, Брокер, Администратор, Владелец системы.
+  Публиковать заказы (FR-09) могут грузоотправитель и брокер, остальные роли только смотрят.
+  Роль «Заказчик» из лабы 2 переименована в «Грузоотправитель».
+- У заказа есть источник (FR-11, сущность DataSource): Сайт ГрузоПоиск, Avito, АТИ, Telegram.
   Заказ из формы на сайте получает источник «Сайт ГрузоПоиск». Это задел под сбор заказов с внешних площадок.
 
-Таблица `orders`:
+Таблица `data_sources` (источники заказов):
 
 | Поле | Тип | Что хранит |
 |---|---|---|
-| id | SERIAL | номер заказа, выдаёт база |
-| from_city, to_city | TEXT | откуда и куда |
-| cargo | TEXT | что везём |
-| weight | DOUBLE PRECISION | вес, т |
-| price | INTEGER | цена, ₽ |
-| load_date | DATE | дата загрузки |
-| shipper | TEXT | грузоотправитель |
-| source | TEXT | источник заказа |
-| status | TEXT | статус (Опубликован) |
-| created_at | TIMESTAMPTZ | когда заказ попал в базу |
+| id | SERIAL, PK | номер источника |
+| name | VARCHAR(100), уникальное | название площадки (Avito, АТИ) |
+| base_url | VARCHAR(255) | адрес площадки |
+| is_active | BOOLEAN | включён ли сбор с площадки |
+
+Таблица `orders` (заказы):
+
+| Поле | Тип | Обязательное | Что хранит |
+|---|---|---|---|
+| id | SERIAL, PK | да | номер заказа, выдаёт база |
+| source_id | INTEGER, FK → data_sources | да | откуда взят заказ |
+| title | VARCHAR(200) | да | краткое название груза |
+| description | TEXT | нет | подробное описание условий |
+| city_from, city_to | VARCHAR(100) | да | город отправления и прибытия |
+| weight | DOUBLE PRECISION | да | масса, т |
+| volume | DOUBLE PRECISION | нет | объём, м³ |
+| body_type | VARCHAR(30) | нет | тип кузова (Тент, Реф, Борт, Изотерма) |
+| price | INTEGER | да | стоимость перевозки, руб. |
+| payment_type | VARCHAR(50) | нет | способ оплаты |
+| contacts | TEXT | да | грузоотправитель и телефон |
+| original_url | VARCHAR(500) | нет | ссылка на оригинал объявления |
+| load_date | DATE | да | дата загрузки |
+| status | VARCHAR(30) | да | статус (Опубликован) |
+| parsed_at | TIMESTAMPTZ | да | время импорта в систему |
+
+Индексы по полям поиска: `city_from`, `city_to`, `weight`, `price`.
 
 Посмотреть данные прямо в базе:
 
 ```bash
-docker compose exec db psql -U gruzopoisk -d gruzopoisk -c "SELECT id, from_city, to_city, shipper, source FROM orders;"
+docker compose exec db psql -U gruzopoisk -d gruzopoisk -c "SELECT o.id, o.title, o.city_from, o.city_to, s.name FROM orders o JOIN data_sources s ON s.id = o.source_id;"
 ```
+
+Если на компьютере осталась база от первой версии лабы 3 (с полем `from_city`), приложение само
+переименует старую таблицу в `orders_old` и создаст новую. Начать с чистой базы: `docker compose down -v`.
 
 ### Сборка и публикация образа
 
@@ -95,8 +120,8 @@ Dockerfile                    сборка образа сайта (python:3.14-
 requirements.txt              зависимости с версиями (fastapi, uvicorn, jinja2, psycopg)
 app/
   main.py                     создание приложения, подготовка базы при старте, главная "/", роль
-  config.py                   название, версия, роли, адрес базы DATABASE_URL
-  storage.py                  работа с PostgreSQL: таблица, демо-заказы, чтение и запись
+  config.py                   название, версия, 5 ролей и права, справочники, адрес базы DATABASE_URL
+  storage.py                  работа с PostgreSQL: таблицы data_sources и orders, демо-данные, чтение и запись
   templating.py               подключение Jinja2 и общие данные для всех страниц
   routers/
     orders.py                 функции 1 и 2: создание заказа, список, карточка

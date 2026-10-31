@@ -69,3 +69,13 @@ h1 { margin: 0 0 20px; color: #1e3a8a; }
 .denied h1 { color: #b91c1c; }
 .denied li { margin-bottom: 4px; }
 .nowrap { white-space: nowrap; }
+
+.order-form select, .order-form textarea {
+    padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; font-weight: 400; font-family: inherit;
+}
+.card-blocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 18px; }
+.card-block { background: #f8fafc; border-radius: 12px; padding: 16px 18px; border-top: 4px solid #f59e0b; }
+.card-block h2 { margin: 0 0 10px; font-size: 18px; color: #1e3a8a; }
+.card-block p { margin: 6px 0; }
+.meta-title { margin: 18px 0 4px; font-weight: 600; color: #6b7280; font-size: 14px; }
+.meta { margin: 0; color: #6b7280; font-size: 14px; }

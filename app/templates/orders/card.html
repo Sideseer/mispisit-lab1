@@ -1,17 +1,34 @@
 {% extends "base.html" %}
 {% block title %}Заказ № {{ order.id }}{% endblock %}
 {% block content %}
-<h1>Заказ № {{ order.id }}: {{ order.from_city }} → {{ order.to_city }}</h1>
-<dl class="card-fields">
-    <dt>Откуда</dt><dd>{{ order.from_city }}</dd>
-    <dt>Куда</dt><dd>{{ order.to_city }}</dd>
-    <dt>Груз</dt><dd>{{ order.cargo }}</dd>
-    <dt>Вес</dt><dd>{{ '%g'|format(order.weight) }} т</dd>
-    <dt>Цена</dt><dd>{{ "{:,}".format(order.price).replace(",", " ") }} ₽</dd>
-    <dt>Дата загрузки</dt><dd>{{ order.load_date.strftime('%d.%m.%Y') }}</dd>
-    <dt>Грузоотправитель</dt><dd>{{ order.shipper }}</dd>
-    <dt>Источник</dt><dd>{{ order.source }}</dd>
-    <dt>Статус</dt><dd>{{ order.status }}</dd>
-</dl>
-<p><a class="button" href="/orders">← К списку заказов</a></p>
+<p><a href="/orders">← Назад к списку</a></p>
+<h1>Заказ № {{ order.id }}: {{ order.title }}, {{ order.city_from }} → {{ order.city_to }}</h1>
+<div class="card-blocks">
+    <section class="card-block">
+        <h2>Параметры груза</h2>
+        <p>Масса: <b>{{ '%g'|format(order.weight) }} т</b></p>
+        <p>Объём: <b>{{ ('%g'|format(order.volume) ~ ' м³') if order.volume else 'не указан' }}</b></p>
+        <p>Тип кузова: <b>{{ order.body_type or 'любой' }}</b></p>
+        <p>Дата загрузки: <b>{{ order.load_date.strftime('%d.%m.%Y') }}</b></p>
+        {% if order.description %}<p>Описание: {{ order.description }}</p>{% endif %}
+    </section>
+    <section class="card-block">
+        <h2>Финансовые условия</h2>
+        <p>Стоимость: <b>{{ "{:,}".format(order.price).replace(",", " ") }} руб.</b></p>
+        <p>Оплата: <b>{{ order.payment_type or 'по договорённости' }}</b></p>
+    </section>
+    <section class="card-block">
+        <h2>Контакты</h2>
+        <p>Грузоотправитель: <b>{{ order.contacts }}</b></p>
+    </section>
+</div>
+{% if order.original_url %}
+<p><a class="button" href="{{ order.original_url }}" target="_blank" rel="noopener">Открыть оригинал на {{ order.source_name }}</a></p>
+{% endif %}
+<p class="meta-title">Системные метаданные</p>
+<ul class="meta">
+    <li>Источник данных: {{ order.source_name }}</li>
+    <li>Время импорта в систему: {{ order.parsed_local.strftime('%d.%m.%Y %H:%M') }}</li>
+    <li>Статус: {{ order.status }}</li>
+</ul>
 {% endblock %}

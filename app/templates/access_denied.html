@@ -13,10 +13,10 @@
     <p class="hint">Вернитесь к форме, исправьте данные и отправьте заказ ещё раз.</p>
     <p><a class="button" href="/orders/new">← К форме заказа</a></p>
     {% elif kind == 'role' %}
-    <p class="hint">Чтобы создать заказ, переключите роль в шапке на «Грузоотправитель».</p>
+    <p class="hint">Чтобы опубликовать заказ, переключите роль в шапке на «Грузоотправитель» или «Брокер».</p>
     <p><a class="button" href="/orders">Смотреть заказы</a></p>
     {% else %}
-    <p><a class="button" href="/orders">← К списку заказов</a></p>
+    <p><a class="button" href="/orders">← Назад к списку</a></p>
     {% endif %}
 </section>
 {% endblock %}
