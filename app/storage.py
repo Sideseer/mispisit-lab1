@@ -5,9 +5,10 @@
   orders        заказы на перевозку, каждый ссылается на свой источник (source_id).
 Таблица называется orders, а не order, потому что ORDER зарезервированное слово SQL.
 
-init_db() при старте приложения создаёт таблицы и, если они пустые,
-кладёт туда источники и 3 демо-заказа. Данные живут в volume базы,
-поэтому не пропадают после перезапуска контейнеров.
+init_db() при старте приложения сама создаёт таблицы, если их ещё нет,
+и заполняет справочник источников. Демо-заказов нет: после первого запуска
+список заказов пустой. Данные живут в томе dbdata, поэтому не пропадают
+после docker compose down и docker compose up -d.
 """
 import time
 
@@ -50,25 +51,11 @@ CREATE INDEX IF NOT EXISTS orders_weight_idx ON orders (weight);
 CREATE INDEX IF NOT EXISTS orders_price_idx ON orders (price);
 """
 
-DEMO_SOURCES = [
+SOURCES = [
     (SOURCE_SITE, "http://localhost:8080"),
     ("Avito", "https://www.avito.ru"),
     ("АТИ", "https://ati.su"),
     ("Telegram", "https://t.me"),
-]
-
-# title, description, city_from, city_to, weight, volume, body_type, price,
-# payment_type, contacts, original_url, load_date, source
-DEMO_ORDERS = [
-    ("Мебель для офиса", "12 коробок, нужна аккуратная погрузка", "Ульяновск", "Самара",
-     1.2, 8, "Тент", 9500, "Безналичный расчёт", "ООО «СтройМебель», +7 (8422) 41-22-10",
-     None, "2026-11-02", SOURCE_SITE),
-    ("Стройматериалы на поддонах", None, "Казань", "Ульяновск",
-     5, 30, "Борт", 18000, "Наличные на выгрузке", "ИП Сафин Р.М., +7 (843) 200-15-15",
-     "https://www.avito.ru/kazan/predlozheniya_uslug/gruzoperevozki", "2026-11-04", "Avito"),
-    ("Автозапчасти", "Коробки на 3 поддонах", "Димитровград", "Москва",
-     3.5, 15, "Тент", 42000, "Предоплата", "ООО «ДимАвтоДеталь», +7 (84235) 2-11-00",
-     "https://ati.su", "2026-11-06", "АТИ"),
 ]
 
 INSERT = """
@@ -91,32 +78,18 @@ def connect():
     return psycopg.connect(DATABASE_URL, row_factory=dict_row, connect_timeout=3)
 
 
-def _keep_old_table(conn) -> None:
-    """Если в volume осталась таблица orders из первой версии лабы 3 (поле from_city),
-    не удаляем её, а переименовываем в orders_old, чтобы создать новую по схеме."""
-    old = conn.execute(
-        "SELECT 1 FROM information_schema.columns "
-        "WHERE table_name = 'orders' AND column_name = 'from_city'"
-    ).fetchone()
-    if old:
-        conn.execute("ALTER TABLE orders RENAME TO orders_old")
-
-
 def init_db(attempts: int = 30) -> None:
-    """Создать таблицы, источники и демо-заказы. Ждём базу до 30 секунд, если она ещё стартует."""
+    """Создать таблицы и справочник источников. Ждём базу до 30 секунд, если она ещё стартует."""
+    if not DATABASE_URL:
+        raise RuntimeError("Не задана переменная DATABASE_URL (её задаёт docker-compose.yml)")
     for attempt in range(1, attempts + 1):
         try:
             with connect() as conn:
-                _keep_old_table(conn)
                 conn.execute(CREATE_TABLES)
-                for name, url in DEMO_SOURCES:
+                for name, url in SOURCES:
                     conn.execute(
                         "INSERT INTO data_sources (name, base_url) VALUES (%s, %s) "
                         "ON CONFLICT (name) DO NOTHING", (name, url))
-                count = conn.execute("SELECT count(*) AS n FROM orders").fetchone()["n"]
-                if count == 0:
-                    for order in DEMO_ORDERS:
-                        conn.execute(INSERT, order)
             return
         except psycopg.OperationalError:
             if attempt == attempts:

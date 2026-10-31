@@ -2,7 +2,7 @@
 
 Здесь создаётся приложение FastAPI, подключаются статика, шаблоны
 и маршруты трёх функций из папки routers. При старте приложение
-подключается к базе PostgreSQL и готовит таблицу заказов.
+подключается к базе PostgreSQL и само создаёт пустые таблицы.
 """
 from contextlib import asynccontextmanager
 
@@ -19,7 +19,7 @@ from app.templating import render
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Выполняется один раз при запуске: таблица и демо-заказы в базе."""
+    """Выполняется один раз при запуске: приложение само создаёт таблицы в базе."""
     storage.init_db()
     yield
 

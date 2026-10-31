@@ -14,10 +14,9 @@ APP_DESCRIPTION = (
 APP_VERSION = "0.0.3"
 
 # Адрес базы PostgreSQL. Берётся из переменной окружения DATABASE_URL,
-# которую задаёт docker-compose.yml (значения лежат в файле .env).
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgresql://gruzopoisk:gruzopoisk@localhost:5432/gruzopoisk"
-)
+# которую задаёт docker-compose.yml: postgres://app:app@db:5432/app
+# (db это имя сервиса базы). Пароля строкой в коде нет.
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
 # Роли системы, как в ЛР2 3 курса (таблица 1 «Пользовательские роли»).
 # Водитель главная роль: он ищет и смотрит заказы.

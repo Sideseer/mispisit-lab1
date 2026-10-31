@@ -1,37 +1,29 @@
-# ГрузоПоиск: два контейнера, app (сайт на FastAPI) и db (PostgreSQL 18).
-# Запуск: docker compose up -d --build
-# Остановка: docker compose down
+name: mispisit-akhmetzhanov
 
 services:
-  db:
-    image: postgres:18
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-gruzopoisk}
-      POSTGRES_USER: ${POSTGRES_USER:-gruzopoisk}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gruzopoisk}
-    # данные базы живут в volume, а не внутри контейнера
-    volumes:
-      - db-data:/var/lib/postgresql
-    # проверка «база готова принимать подключения?»
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-
   app:
-    build: .
     image: sideseer/mispisit-lab1:0.0.3
-    restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-gruzopoisk}:${POSTGRES_PASSWORD:-gruzopoisk}@db:5432/${POSTGRES_DB:-gruzopoisk}
     ports:
-      - "${APP_PORT:-8080}:8080"
-    # сайт стартует только после того, как база стала healthy
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://app:app@db:5432/app
     depends_on:
       db:
         condition: service_healthy
 
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
+    volumes:
+      - dbdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d app"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
 volumes:
-  db-data:
+  dbdata:

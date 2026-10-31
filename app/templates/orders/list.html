@@ -5,6 +5,13 @@
 {% if created %}
 <p class="notice success">Заказ № {{ created }} опубликован. Водители уже видят его в ленте.</p>
 {% endif %}
+{% if not orders %}
+<div class="empty">
+    <h2>Заказов пока нет</h2>
+    <p>База только что создана и список пуст. Первый заказ публикует грузоотправитель или брокер.</p>
+    <a class="button" href="/orders/new">Опубликовать заказ</a>
+</div>
+{% else %}
 <p class="hint">Найдено заказов: {{ orders|length }}</p>
 <table class="orders">
     <thead>
@@ -27,4 +34,5 @@
     </tbody>
 </table>
 <p class="hint">Нажмите на маршрут, чтобы открыть карточку заказа.</p>
+{% endif %}
 {% endblock %}
