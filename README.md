@@ -6,9 +6,49 @@
 
 ## Запуск
 
+```text
+Репозиторий: https://github.com/Sideseer/mispisit-lab1
+Ветка: lab3
+Pull Request: https://github.com/Sideseer/mispisit-lab1/pull/3
+Образ: sideseer/mispisit-lab1:0.0.3
+Страница образа: https://hub.docker.com/r/sideseer/mispisit-lab1
+
+git clone -b lab3 https://github.com/Sideseer/mispisit-lab1
+cd mispisit-lab1
+docker compose up -d
+```
+
+Сайт открывается по адресу http://localhost:8080
+
+Остановить: `docker compose down` (без флага `-v`, тогда заказы остаются в томе `dbdata`).
+
+## Лабораторная работа 3. Постоянное хранение данных
+
+Заказы теперь хранятся в PostgreSQL 18 (официальный образ `postgres:18`), который работает вторым
+сервисом рядом с приложением. Файл `docker-compose.yml` описывает два сервиса:
+
+- `app` это готовый опубликованный образ `sideseer/mispisit-lab1:0.0.3` (linux/amd64 и linux/arm64), строки `build` нет;
+- `db` это база PostgreSQL 18, её файлы лежат в именованном томе `dbdata` (путь `/var/lib/postgresql`,
+  так требует образ PostgreSQL 18), порт базы наружу не открыт.
+
+Имя проекта `mispisit-akhmetzhanov` задано строкой `name`, поэтому том называется
+`mispisit-akhmetzhanov_dbdata` и не пересекается с чужими проектами. У базы есть `healthcheck`
+(`pg_isready`), приложение стартует только после него (`condition: service_healthy`).
+Логин, пароль и имя базы учебные (`app`), их задаёт `docker-compose.yml` через переменные окружения,
+приложение подключается по имени сервиса `db` (`DATABASE_URL`).
+
+При первом запуске приложение само создаёт таблицы `data_sources` (источники заказов: Сайт ГрузоПоиск,
+Avito, АТИ, Telegram) и `orders` (заказы). Демо-заказов нет, список заказов после запуска пустой.
+Названия таблиц и полей взяты из ER-диаграммы ЛР5 3 курса (сущности DataSource и Order).
+Публиковать заказы могут Грузоотправитель и Брокер, Водитель только смотрит.
+
+Проверка сохранности: создать заказ, выполнить `docker compose down`, потом `docker compose up -d`,
+заказ остаётся в списке.
+
+Сборка и публикация образа:
+
 ```bash
-docker pull sideseer/mispisit-lab1:0.0.2
-docker run --rm -p 8080:8080 sideseer/mispisit-lab1:0.0.2
+docker buildx build --platform linux/amd64,linux/arm64 -t sideseer/mispisit-lab1:0.0.3 --push .
 ```
 
 ## Лабораторная работа 2. Три главные функции и страницы
@@ -17,7 +57,7 @@ docker run --rm -p 8080:8080 sideseer/mispisit-lab1:0.0.2
 
 | Функция | Кто это делает | Что происходит | Адрес |
 |---|---|---|---|
-| Создать заказ на перевозку | Заказчик | Изменение данных | /orders/new |
+| Создать заказ на перевозку | Грузоотправитель (в лабе 2 роль называлась «Заказчик») | Изменение данных | /orders/new |
 | Посмотреть заказы (список и карточка) | Водитель | Просмотр | /orders, /orders/1 |
 | Попытка водителя создать заказ, ошибочные данные в форме | Водитель, Заказчик | Отказ | /access-denied |
 
@@ -33,7 +73,7 @@ docker run --rm -p 8080:8080 sideseer/mispisit-lab1:0.0.2
 
 Данные сейчас лежат в файле `app/data/orders.json` внутри контейнера: форма дописывает его, список и карточка читают. После удаления контейнера новые заказы пропадают, остаются три демо-заказа.
 
-### Сборка и публикация образа
+#### Сборка образа лабы 2
 
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 -t sideseer/mispisit-lab1:0.0.2 --push .
@@ -41,7 +81,7 @@ docker buildx build --platform linux/amd64,linux/arm64 -t sideseer/mispisit-lab1
 
 Образ в Docker Hub: https://hub.docker.com/r/sideseer/mispisit-lab1 (тег `0.0.2`, платформы linux/amd64 и linux/arm64).
 
-### Состав репозитория
+#### Состав репозитория (лаба 2)
 
 ```text
 Dockerfile                    сборка образа (python:3.14-slim, порт 8080)
