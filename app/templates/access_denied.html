@@ -1,22 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Отказ{% endblock %}
 {% block content %}
-<section class="denied">
-    <h1>{% if kind == 'validation' %}Заказ не принят{% elif kind == 'not_found' %}Заказ не найден{% else %}Доступ запрещён{% endif %}</h1>
-    <p><b>Кто пытался:</b> {{ who }}</p>
-    <p><b>Что пытался сделать:</b> {{ action }}</p>
-    <p><b>Почему система не дала это сделать:</b></p>
-    <ul>
+<div class="alert alert-danger" role="alert">
+    <h1 class="alert-heading h4">{% if kind == 'validation' %}Заказ не принят{% elif kind == 'not_found' %}Заказ не найден{% else %}Доступ запрещён{% endif %}</h1>
+    <hr>
+    <p class="mb-1"><strong>Кто пытался:</strong> {{ who }}</p>
+    <p class="mb-1"><strong>Что пытался сделать:</strong> {{ action }}</p>
+    <p class="mb-2"><strong>Почему система не дала это сделать:</strong></p>
+    <ul class="mb-0">
         {% for r in reasons %}<li>{{ r }}</li>{% endfor %}
     </ul>
-    {% if kind == 'validation' %}
-    <p class="hint">Вернитесь к форме, исправьте данные и отправьте заказ ещё раз.</p>
-    <p><a class="button" href="/orders/new">← К форме заказа</a></p>
-    {% elif kind == 'role' %}
-    <p class="hint">Чтобы опубликовать заказ, переключите роль в шапке на «Грузоотправитель» или «Брокер».</p>
-    <p><a class="button" href="/orders">Смотреть заказы</a></p>
-    {% else %}
-    <p><a class="button" href="/orders">← Назад к списку</a></p>
-    {% endif %}
-</section>
+</div>
+{% if kind == 'validation' %}
+<p class="text-secondary">Вернитесь к форме, исправьте данные и отправьте заказ ещё раз.</p>
+<p class="mb-0"><a class="btn btn-warning" href="/orders/new">К форме заказа</a></p>
+{% elif kind == 'role' %}
+<p class="text-secondary">Чтобы опубликовать заказ, переключите роль в шапке на «Грузоотправитель» или «Брокер».</p>
+<p class="mb-0"><a class="btn btn-warning" href="/orders">Смотреть заказы</a></p>
+{% else %}
+<p class="mb-0"><a class="btn btn-warning" href="/orders">Назад к списку</a></p>
+{% endif %}
 {% endblock %}
