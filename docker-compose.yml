@@ -2,7 +2,7 @@ name: mispisit-akhmetzhanov
 
 services:
   app:
-    image: sideseer/mispisit-lab1:0.0.3
+    image: sideseer/mispisit-lab1:0.0.4
     ports:
       - "8080:8080"
     environment:

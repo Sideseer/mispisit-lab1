@@ -1,23 +1,39 @@
 {% extends "base.html" %}
 {% block title %}Главная{% endblock %}
 {% block content %}
-<section class="hero">
-    <h1>{{ app_name }}</h1>
-    <p class="description">{{ app_description }}</p>
-    <p class="version">Версия {{ version }}</p>
+<section class="gp-hero text-white rounded-4 p-4 p-md-5 mb-4">
+    <h1 class="display-5 fw-bold mb-3">{{ app_name }}</h1>
+    <p class="lead mb-2">{{ app_description }}</p>
+    <p class="mb-4">Версия {{ version }}</p>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-warning btn-lg" href="/orders">Найти груз</a>
+        <a class="btn btn-outline-light btn-lg" href="/orders/new">Опубликовать заказ</a>
+    </div>
 </section>
-<section class="actions">
-    <a class="action" href="/orders/new">
-        <h2>Опубликовать заказ</h2>
-        <p>Грузоотправитель или брокер публикует груз: маршрут, масса, тип кузова и стоимость.</p>
-    </a>
-    <a class="action" href="/orders">
-        <h2>Найти заказ</h2>
-        <p>Водитель смотрит ленту заказов со всех источников и открывает карточку нужного.</p>
-    </a>
-    <a class="action" href="/access-denied">
-        <h2>Отказ</h2>
-        <p>Что будет, если водитель попробует опубликовать заказ или данные неверные.</p>
-    </a>
-</section>
+<div class="row g-3">
+    <div class="col-md-4">
+        <a class="card h-100 text-decoration-none gp-action" href="/orders">
+            <div class="card-body">
+                <h2 class="h5 card-title">Найти заказ</h2>
+                <p class="card-text text-secondary mb-0">Водитель смотрит ленту заказов со всех источников и открывает карточку нужного.</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a class="card h-100 text-decoration-none gp-action" href="/orders/new">
+            <div class="card-body">
+                <h2 class="h5 card-title">Опубликовать заказ</h2>
+                <p class="card-text text-secondary mb-0">Грузоотправитель или брокер публикует груз: маршрут, масса, тип кузова и стоимость.</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a class="card h-100 text-decoration-none gp-action" href="/access-denied">
+            <div class="card-body">
+                <h2 class="h5 card-title">Отказ</h2>
+                <p class="card-text text-secondary mb-0">Что будет, если водитель попробует опубликовать заказ или данные неверные.</p>
+            </div>
+        </a>
+    </div>
+</div>
 {% endblock %}

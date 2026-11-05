@@ -8,12 +8,12 @@
 
 ```text
 Репозиторий: https://github.com/Sideseer/mispisit-lab1
-Ветка: lab3
-Pull Request: https://github.com/Sideseer/mispisit-lab1/pull/3
-Образ: sideseer/mispisit-lab1:0.0.3
+Ветка: lab4
+Pull Request: https://github.com/Sideseer/mispisit-lab1/pull/4
+Образ: sideseer/mispisit-lab1:0.0.4
 Страница образа: https://hub.docker.com/r/sideseer/mispisit-lab1
 
-git clone -b lab3 https://github.com/Sideseer/mispisit-lab1
+git clone -b lab4 https://github.com/Sideseer/mispisit-lab1
 cd mispisit-lab1
 docker compose up -d
 ```
@@ -21,6 +21,20 @@ docker compose up -d
 Сайт открывается по адресу http://localhost:8080
 
 Остановить: `docker compose down` (без флага `-v`, тогда заказы остаются в томе `dbdata`).
+
+## Лабораторная работа 4. Интерфейс и внешний вид рабочей версии
+
+Интерфейс этой версии один и живёт в том же приложении FastAPI: страницы по-прежнему собирает Jinja2. Вид собран библиотекой Bootstrap 5.3.8. Файлы `bootstrap.min.css` и `bootstrap.bundle.min.js` лежат в образе, в каталоге `app/static/vendor/bootstrap/`. Страница не обращается к чужому сайту.
+
+Экраны те же, что во второй работе: главная `/`, список `/orders`, форма `/orders/new`, карточка `/orders/{id}`, отказ `/access-denied`. Пустой список оформлен карточкой с кнопкой. Форма записывает заказ в PostgreSQL из третьей работы. В шапке меню и выбор роли, в подвале строка «ГрузоПоиск 0.0.4». Отдельный клиентский сайт на React в эту версию не входит.
+
+Образ приложения: `sideseer/mispisit-lab1:0.0.4` (linux/amd64 и linux/arm64). В `docker-compose.yml` у сервиса `app` только `image`, строки `build` нет. Имя проекта `mispisit-akhmetzhanov`, том `dbdata` и база `postgres:18` те же, что в третьей работе. Порт базы наружу не открыт.
+
+Сборка и публикация образа:
+
+```bash
+docker buildx build --platform linux/amd64,linux/arm64 -t sideseer/mispisit-lab1:0.0.4 --push .
+```
 
 ## Лабораторная работа 3. Постоянное хранение данных
 
