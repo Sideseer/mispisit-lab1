@@ -11,7 +11,7 @@ APP_DESCRIPTION = (
     "в одну ленту, грузоотправитель или брокер публикует груз, "
     "а водитель находит подходящий заказ"
 )
-APP_VERSION = "0.0.3"
+APP_VERSION = "0.0.4"
 
 # Адрес базы PostgreSQL. Берётся из переменной окружения DATABASE_URL,
 # которую задаёт docker-compose.yml: postgres://app:app@db:5432/app

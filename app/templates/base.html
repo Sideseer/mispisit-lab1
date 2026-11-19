@@ -3,32 +3,52 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}{{ app_name }}{% endblock %} | {{ app_name }}</title>
+    <title>{% block title %}{{ app_name }}{% endblock %} | {{ app_name }} {{ version }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='vendor/bootstrap/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
 </head>
 <body>
-<header class="topbar">
-    <a class="logo" href="/">{{ app_name }}</a>
-    <nav class="menu">
-        <a href="/" class="{{ 'active' if path == '/' }}">Главная</a>
-        <a href="/orders" class="{{ 'active' if path == '/orders' or (path.startswith('/orders/') and path != '/orders/new') }}">Заказы</a>
-        <a href="/orders/new" class="{{ 'active' if path == '/orders/new' }}">Новый заказ</a>
-        <a href="/access-denied" class="{{ 'active' if path == '/access-denied' }}">Отказ</a>
-    </nav>
-    <form class="role" method="post" action="/role">
-        <label for="role">Роль:</label>
-        <select id="role" name="role" onchange="this.form.submit()">
-            {% for key, title in roles.items() %}
-            <option value="{{ key }}" {{ 'selected' if key == role }}>{{ title }}</option>
-            {% endfor %}
-        </select>
-        <input type="hidden" name="back" value="{{ path if path != '/access-denied' else '/' }}">
-        <noscript><button type="submit">OK</button></noscript>
-    </form>
-</header>
-<main class="page">
+<nav class="navbar navbar-expand-lg navbar-dark gp-navbar">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="/">
+            {{ app_name }}
+            <span class="badge text-bg-warning text-dark ms-1">{{ version }}</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Меню">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link{% if path == '/' %} active{% endif %}" {% if path == '/' %}aria-current="page"{% endif %} href="/">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if path == '/orders' or (path.startswith('/orders/') and path != '/orders/new') %} active{% endif %}" {% if path == '/orders' or (path.startswith('/orders/') and path != '/orders/new') %}aria-current="page"{% endif %} href="/orders">Заказы</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if path == '/orders/new' %} active{% endif %}" {% if path == '/orders/new' %}aria-current="page"{% endif %} href="/orders/new">Новый заказ</a>
+                </li>
+            </ul>
+            <form class="d-flex align-items-center gap-2" method="post" action="/role">
+                <label class="text-white small mb-0" for="role">Роль</label>
+                <select class="form-select form-select-sm" id="role" name="role" onchange="this.form.submit()" aria-label="Роль">
+                    {% for key, title in roles.items() %}
+                    <option value="{{ key }}" {{ 'selected' if key == role }}>{{ title }}</option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="back" value="{{ path if path != '/access-denied' else '/' }}">
+                <noscript><button class="btn btn-warning btn-sm" type="submit">OK</button></noscript>
+            </form>
+        </div>
+    </div>
+</nav>
+<main class="container py-4">
     {% block content %}{% endblock %}
 </main>
-<footer class="footer">{{ app_name }} · версия {{ version }} · вы вошли как: {{ role_title }}</footer>
+<footer class="gp-footer mt-auto">
+    <div class="container text-center">{{ app_name }} {{ version }}</div>
+</footer>
+<script src="{{ url_for('static', path='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

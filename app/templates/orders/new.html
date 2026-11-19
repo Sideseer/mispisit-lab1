@@ -1,30 +1,65 @@
 {% extends "base.html" %}
 {% block title %}Новый заказ{% endblock %}
 {% block content %}
-<h1>Новый заказ на перевозку</h1>
-<form class="order-form" method="post" action="/orders/new" novalidate>
-    <label class="wide">Название груза <input name="title" value="{{ form.title or '' }}" placeholder="Что везём, например «Мебель для офиса»"></label>
-    <label>Город откуда <input name="city_from" value="{{ form.city_from or '' }}" placeholder="Ульяновск"></label>
-    <label>Город куда <input name="city_to" value="{{ form.city_to or '' }}" placeholder="Самара"></label>
-    <label>Масса, т <input name="weight" value="{{ form.weight or '' }}" placeholder="1.5"></label>
-    <label>Объём, м³ <input name="volume" value="{{ form.volume or '' }}" placeholder="необязательно"></label>
-    <label>Тип кузова
-        <select name="body_type">
-            <option value="">Любой</option>
-            {% for b in body_types %}<option {{ 'selected' if form.body_type == b }}>{{ b }}</option>{% endfor %}
-        </select>
-    </label>
-    <label>Дата загрузки <input type="date" name="load_date" value="{{ form.load_date or today }}"></label>
-    <label>Стоимость, руб. <input name="price" value="{{ form.price or '' }}" placeholder="10000"></label>
-    <label>Оплата
-        <select name="payment_type">
-            <option value="">По договорённости</option>
-            {% for p in payment_types %}<option {{ 'selected' if form.payment_type == p }}>{{ p }}</option>{% endfor %}
-        </select>
-    </label>
-    <label class="wide">Контакты грузоотправителя <input name="contacts" value="{{ form.contacts or '' }}" placeholder="Название или ФИО и телефон"></label>
-    <label class="wide">Описание <textarea name="description" rows="2" placeholder="Необязательно: условия погрузки, габариты">{{ form.description or '' }}</textarea></label>
-    <p class="hint wide">Источник заказа: «Сайт ГрузоПоиск» (ставится автоматически).</p>
-    <button type="submit">Опубликовать заказ</button>
+<h1 class="h3 mb-3">Новый заказ на перевозку</h1>
+<form class="card border-0 shadow-sm" method="post" action="/orders/new" novalidate>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label" for="title">Название груза</label>
+                <input class="form-control" id="title" name="title" value="{{ form.title or '' }}" placeholder="Что везём, например «Мебель для офиса»">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="city_from">Город откуда</label>
+                <input class="form-control" id="city_from" name="city_from" value="{{ form.city_from or '' }}" placeholder="Ульяновск">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="city_to">Город куда</label>
+                <input class="form-control" id="city_to" name="city_to" value="{{ form.city_to or '' }}" placeholder="Самара">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="weight">Масса, т</label>
+                <input class="form-control" id="weight" name="weight" value="{{ form.weight or '' }}" placeholder="1.5" inputmode="decimal">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="volume">Объём, м³</label>
+                <input class="form-control" id="volume" name="volume" value="{{ form.volume or '' }}" placeholder="необязательно" inputmode="decimal">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="body_type">Тип кузова</label>
+                <select class="form-select" id="body_type" name="body_type">
+                    <option value="">Любой</option>
+                    {% for b in body_types %}<option {{ 'selected' if form.body_type == b }}>{{ b }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="load_date">Дата загрузки</label>
+                <input class="form-control" id="load_date" type="date" name="load_date" value="{{ form.load_date or today }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="price">Стоимость, руб.</label>
+                <input class="form-control" id="price" name="price" value="{{ form.price or '' }}" placeholder="10000" inputmode="numeric">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label" for="payment_type">Оплата</label>
+                <select class="form-select" id="payment_type" name="payment_type">
+                    <option value="">По договорённости</option>
+                    {% for p in payment_types %}<option {{ 'selected' if form.payment_type == p }}>{{ p }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-12">
+                <label class="form-label" for="contacts">Контакты грузоотправителя</label>
+                <input class="form-control" id="contacts" name="contacts" value="{{ form.contacts or '' }}" placeholder="Название или ФИО и телефон">
+            </div>
+            <div class="col-12">
+                <label class="form-label" for="description">Описание</label>
+                <textarea class="form-control" id="description" name="description" rows="2" placeholder="Необязательно: условия погрузки, габариты">{{ form.description or '' }}</textarea>
+            </div>
+        </div>
+        <p class="text-secondary small mt-3 mb-0">Источник заказа: «Сайт ГрузоПоиск» (ставится автоматически).</p>
+    </div>
+    <div class="card-footer bg-white border-0 pt-0 pb-4 px-4">
+        <button class="btn btn-warning" type="submit">Опубликовать заказ</button>
+    </div>
 </form>
 {% endblock %}

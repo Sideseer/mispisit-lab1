@@ -1,38 +1,57 @@
 {% extends "base.html" %}
 {% block title %}Заказы{% endblock %}
 {% block content %}
-<h1>Заказы на перевозку</h1>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 mb-0">Заказы на перевозку</h1>
+    <a class="btn btn-warning" href="/orders/new">Опубликовать заказ</a>
+</div>
 {% if created %}
-<p class="notice success">Заказ № {{ created }} опубликован. Водители уже видят его в ленте.</p>
+<div class="alert alert-success" role="alert">Заказ № {{ created }} опубликован. Водители уже видят его в ленте.</div>
 {% endif %}
 {% if not orders %}
-<div class="empty">
-    <h2>Заказов пока нет</h2>
-    <p>База только что создана и список пуст. Первый заказ публикует грузоотправитель или брокер.</p>
-    <a class="button" href="/orders/new">Опубликовать заказ</a>
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5 px-4">
+        <h2 class="h4">Заказов пока нет</h2>
+        <p class="text-secondary mb-4">База только что создана и список пуст. Первый заказ публикует грузоотправитель или брокер.</p>
+        <a class="btn btn-warning" href="/orders/new">Опубликовать первый заказ</a>
+    </div>
 </div>
 {% else %}
-<p class="hint">Найдено заказов: {{ orders|length }}</p>
-<table class="orders">
-    <thead>
-    <tr><th>№</th><th>Маршрут</th><th>Груз</th><th class="nowrap">Масса, т</th><th>Кузов</th><th class="nowrap">Стоимость, руб.</th><th>Загрузка</th><th>Источник</th><th>Статус</th></tr>
-    </thead>
-    <tbody>
-    {% for o in orders %}
-    <tr class="{{ 'new' if created and o.id|string == created }}">
-        <td>{{ o.id }}</td>
-        <td><a href="/orders/{{ o.id }}">{{ o.city_from }} → {{ o.city_to }}</a></td>
-        <td>{{ o.title }}</td>
-        <td>{{ '%g'|format(o.weight) }}</td>
-        <td>{{ o.body_type or 'любой' }}</td>
-        <td class="nowrap">{{ "{:,}".format(o.price).replace(",", " ") }}</td>
-        <td class="nowrap">{{ o.load_date.strftime('%d.%m.%Y') }}</td>
-        <td>{{ o.source_name }}</td>
-        <td>{{ o.status }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-<p class="hint">Нажмите на маршрут, чтобы открыть карточку заказа.</p>
+<p class="text-secondary">Найдено заказов: {{ orders|length }}</p>
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+            <tr>
+                <th>№</th>
+                <th>Маршрут</th>
+                <th>Груз</th>
+                <th class="text-nowrap">Масса, т</th>
+                <th>Кузов</th>
+                <th class="text-nowrap">Стоимость, руб.</th>
+                <th>Загрузка</th>
+                <th>Источник</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for o in orders %}
+            <tr class="{{ 'table-success' if created and o.id|string == created }}">
+                <td>{{ o.id }}</td>
+                <td><a href="/orders/{{ o.id }}">{{ o.city_from }} → {{ o.city_to }}</a></td>
+                <td>{{ o.title }}</td>
+                <td>{{ '%g'|format(o.weight) }}</td>
+                <td>{{ o.body_type or 'любой' }}</td>
+                <td class="text-nowrap">{{ "{:,}".format(o.price).replace(",", " ") }}</td>
+                <td class="text-nowrap">{{ o.load_date.strftime('%d.%m.%Y') }}</td>
+                <td><span class="badge text-bg-secondary">{{ o.source_name }}</span></td>
+                <td><span class="badge text-bg-success">{{ o.status }}</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<p class="text-secondary mt-3 mb-0">Нажмите на маршрут, чтобы открыть карточку заказа.</p>
 {% endif %}
 {% endblock %}
