@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Уведомления{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 mb-0">Уведомления</h1>
+</div>
+{% if not notifications %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5 px-4">
+        <h2 class="h4">Новых уведомлений нет</h2>
+        <p class="text-secondary mb-0">Когда грузоотправитель или брокер опубликует заказ, сообщение появится здесь.</p>
+    </div>
+</div>
+{% else %}
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+            <tr>
+                <th>Сообщение</th>
+                <th class="text-nowrap">Время</th>
+                <th>Статус</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for n in notifications %}
+            <tr>
+                <td>
+                    <a href="/orders/{{ n.order_id }}">{{ n.message }}</a>
+                </td>
+                <td class="text-nowrap">{{ n.created_local.strftime('%d.%m.%Y %H:%M') }}</td>
+                <td>
+                    {% if n.status == 'новое' %}
+                    <span class="badge text-bg-warning text-dark">новое</span>
+                    {% else %}
+                    <span class="badge text-bg-secondary">{{ n.status }}</span>
+                    {% endif %}
+                </td>
+                <td class="text-nowrap text-end">
+                    {% if n.status == 'новое' %}
+                    <form method="post" action="/notifications/{{ n.id }}/read" class="d-inline">
+                        <button class="btn btn-sm btn-outline-secondary" type="submit">Прочитано</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

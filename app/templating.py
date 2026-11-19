@@ -2,6 +2,7 @@
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
 
+from app import storage
 from app.config import APP_DESCRIPTION, APP_NAME, APP_VERSION, BASE_DIR, DEFAULT_ROLE, ROLES
 
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
@@ -21,6 +22,7 @@ def render(request: Request, name: str, context: dict | None = None, status_code
         "role": current_role(request),
         "role_title": ROLES[current_role(request)],
         "path": request.url.path,
+        "unread_count": storage.count_unread(),
     }
     data.update(context or {})
     return templates.TemplateResponse(request, name, data, status_code=status_code)

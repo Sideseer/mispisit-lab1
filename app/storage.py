@@ -3,6 +3,7 @@
 Схема повторяет ER-диаграмму из ЛР5 3 курса (сущности DataSource и Order):
   data_sources  источники заказов (Сайт ГрузоПоиск, Avito, АТИ, Telegram);
   orders        заказы на перевозку, каждый ссылается на свой источник (source_id).
+  notifications уведомления для водителя о новом заказе (лабораторная работа 5).
 Таблица называется orders, а не order, потому что ORDER зарезервированное слово SQL.
 
 init_db() при старте приложения сама создаёт таблицы, если их ещё нет,
@@ -49,6 +50,15 @@ CREATE INDEX IF NOT EXISTS orders_city_from_idx ON orders (city_from);
 CREATE INDEX IF NOT EXISTS orders_city_to_idx ON orders (city_to);
 CREATE INDEX IF NOT EXISTS orders_weight_idx ON orders (weight);
 CREATE INDEX IF NOT EXISTS orders_price_idx ON orders (price);
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id          SERIAL PRIMARY KEY,
+    order_id    INTEGER NOT NULL REFERENCES orders (id)
+                ON DELETE RESTRICT ON UPDATE CASCADE,
+    message     TEXT NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    status      VARCHAR(30) NOT NULL DEFAULT 'новое'
+);
 """
 
 SOURCES = [
@@ -109,12 +119,60 @@ def get_order(order_id: int) -> dict | None:
 
 
 def add_order(order: dict) -> dict:
-    """Сохранить новый заказ. База сама выдаёт ему номер id."""
+    """Сохранить новый заказ. База сама выдаёт ему номер id.
+
+    Вместе с заказом в той же транзакции создаётся уведомление для водителя.
+    Если публикация не удалась, уведомления не будет.
+    """
     with connect() as conn:
         row = conn.execute(INSERT, (
             order["title"], order["description"], order["city_from"], order["city_to"],
             order["weight"], order["volume"], order["body_type"], order["price"],
             order["payment_type"], order["contacts"], None, order["load_date"], order["source"],
         )).fetchone()
-    order["id"] = row["id"]
+        order["id"] = row["id"]
+        message = (
+            f"Новый заказ № {order['id']}: {order['city_from']} → {order['city_to']}, "
+            f"{order['weight']:g} т"
+        )
+        conn.execute(
+            "INSERT INTO notifications (order_id, message, status) VALUES (%s, %s, %s)",
+            (order["id"], message, "новое"),
+        )
     return order
+
+
+def load_notifications() -> list[dict]:
+    """Все уведомления, новые сверху. Время показано по Ульяновску."""
+    with connect() as conn:
+        return conn.execute(
+            "SELECT n.*, n.created_at AT TIME ZONE 'Europe/Ulyanovsk' AS created_local "
+            "FROM notifications n ORDER BY n.id DESC"
+        ).fetchall()
+
+
+def count_unread() -> int:
+    """Сколько уведомлений ещё со статусом «новое»."""
+    with connect() as conn:
+        row = conn.execute(
+            "SELECT COUNT(*) AS n FROM notifications WHERE status = %s", ("новое",)
+        ).fetchone()
+    return row["n"]
+
+
+def get_notification(note_id: int) -> dict | None:
+    with connect() as conn:
+        return conn.execute(
+            "SELECT n.*, n.created_at AT TIME ZONE 'Europe/Ulyanovsk' AS created_local "
+            "FROM notifications n WHERE n.id = %s", (note_id,)
+        ).fetchone()
+
+
+def mark_notification_read(note_id: int) -> dict | None:
+    """Пометить уведомление прочитанным. Если его нет, вернуть None."""
+    with connect() as conn:
+        row = conn.execute(
+            "UPDATE notifications SET status = %s WHERE id = %s RETURNING id",
+            ("прочитано", note_id),
+        ).fetchone()
+    return row
