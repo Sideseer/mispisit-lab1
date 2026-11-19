@@ -42,7 +42,9 @@ def choose_role(role: str = Form(...), back: str = Form("/")):
     """Переключатель роли в шапке. Роль хранится в cookie, входа по паролю пока нет."""
     if role not in ROLES:
         role = "driver"
-    if not back.startswith("/"):
+    # Только путь своего сайта: начинается с одной /, без // и переноса строки.
+    if (not back.startswith("/") or back.startswith("//")
+            or "\r" in back or "\n" in back or len(back) > 200):
         back = "/"
     response = RedirectResponse(back, status_code=303)
     response.set_cookie("role", role, samesite="lax")
