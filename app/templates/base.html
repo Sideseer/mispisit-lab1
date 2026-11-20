@@ -29,6 +29,11 @@
                 <li class="nav-item">
                     <a class="nav-link{% if path == '/orders/new' %} active{% endif %}" {% if path == '/orders/new' %}aria-current="page"{% endif %} href="/orders/new">Новый заказ</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if path.startswith('/notifications') %} active{% endif %}" {% if path.startswith('/notifications') %}aria-current="page"{% endif %} href="/notifications">
+                        Уведомления{% if unread_count %} <span class="badge text-bg-warning text-dark">{{ unread_count }}</span>{% endif %}
+                    </a>
+                </li>
             </ul>
             <form class="d-flex align-items-center gap-2" method="post" action="/role">
                 <label class="text-white small mb-0" for="role">Роль</label>

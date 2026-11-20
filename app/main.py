@@ -1,4 +1,4 @@
-"""ГрузоПоиск: интерфейс рабочей версии 0.0.4.
+"""ГрузоПоиск: интерфейс рабочей версии 0.0.5.
 
 Здесь создаётся приложение FastAPI, подключаются статика, шаблоны
 и маршруты трёх функций из папки routers. При старте приложение
@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import APP_NAME, APP_VERSION, BASE_DIR, ROLES
 from app import storage
-from app.routers import errors, orders
+from app.routers import errors, notifications, orders
 from app.templating import render
 
 
@@ -28,6 +28,7 @@ app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan)
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 app.include_router(orders.router)
+app.include_router(notifications.router)
 app.include_router(errors.router)
 
 
