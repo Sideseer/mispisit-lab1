@@ -6,6 +6,7 @@ Alembic хранит номер последнего применённого ш
 и при запуске применяет только те шаги, которых в базе ещё нет.
 Преподавателю не нужно выполнять отдельных команд: всё делает upgrade_db().
 """
+import logging
 import time
 
 from alembic import command
@@ -13,6 +14,10 @@ from alembic.config import Config
 from sqlalchemy.exc import OperationalError
 
 from app.config import BASE_DIR, DATABASE_URL
+
+# Чтобы в docker compose logs app было видно, какие шаги Alembic применил:
+# строка «Running upgrade 0001 -> 0002» появляется только при настоящем обновлении.
+logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(name)s %(message)s")
 
 
 def sqlalchemy_url() -> str:
