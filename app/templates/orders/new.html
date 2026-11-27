@@ -47,6 +47,12 @@
                     {% for p in payment_types %}<option {{ 'selected' if form.payment_type == p }}>{{ p }}</option>{% endfor %}
                 </select>
             </div>
+            <div class="col-md-6">
+                <label class="form-label" for="urgency">Срочность</label>
+                <select class="form-select" id="urgency" name="urgency">
+                    {% for u in urgency_types %}<option {{ 'selected' if form.urgency == u }}>{{ u }}</option>{% endfor %}
+                </select>
+            </div>
             <div class="col-12">
                 <label class="form-label" for="contacts">Контакты грузоотправителя</label>
                 <input class="form-control" id="contacts" name="contacts" value="{{ form.contacts or '' }}" placeholder="Название или ФИО и телефон">

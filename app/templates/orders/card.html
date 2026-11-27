@@ -12,6 +12,7 @@
                 <p class="mb-1">Объём: <strong>{{ ('%g'|format(order.volume) ~ ' м³') if order.volume else 'не указан' }}</strong></p>
                 <p class="mb-1">Тип кузова: <strong>{{ order.body_type or 'любой' }}</strong></p>
                 <p class="mb-1">Дата загрузки: <strong>{{ order.load_date.strftime('%d.%m.%Y') }}</strong></p>
+                <p class="mb-1">Срочность: <strong>{{ order.urgency }}</strong></p>
                 {% if order.description %}<p class="mb-0">Описание: {{ order.description }}</p>{% endif %}
             </div>
         </section>

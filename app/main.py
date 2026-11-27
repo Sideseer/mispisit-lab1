@@ -1,8 +1,8 @@
-"""ГрузоПоиск: интерфейс рабочей версии 0.0.5.
+"""ГрузоПоиск: рабочая версия 0.0.6.
 
 Здесь создаётся приложение FastAPI, подключаются статика, шаблоны
 и маршруты трёх функций из папки routers. При старте приложение
-подключается к базе PostgreSQL и само создаёт пустые таблицы.
+применяет миграции Alembic (app/migrate.py): таблицы кодом больше не создаются.
 """
 from contextlib import asynccontextmanager
 
@@ -11,7 +11,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import APP_NAME, APP_VERSION, BASE_DIR, ROLES
-from app import storage
+from app.migrate import upgrade_db
 from app.routers import errors, notifications, orders
 from app.templating import render
 
@@ -19,8 +19,8 @@ from app.templating import render
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Выполняется один раз при запуске: приложение само создаёт таблицы в базе."""
-    storage.init_db()
+    """Выполняется один раз при запуске: применяем новые миграции базы."""
+    upgrade_db()
     yield
 
 
