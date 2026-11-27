@@ -11,13 +11,14 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app import storage
-from app.config import BODY_TYPES, CAN_CREATE_ORDER, PAYMENT_TYPES, ROLES, SOURCE_SITE
+from app.config import (BODY_TYPES, CAN_CREATE_ORDER, PAYMENT_TYPES, ROLES, SOURCE_SITE,
+                        URGENCY_DEFAULT, URGENCY_TYPES)
 from app.templating import current_role, render
 
 router = APIRouter(prefix="/orders")
 
 FIELDS = ["title", "description", "city_from", "city_to", "weight", "volume",
-          "body_type", "price", "payment_type", "load_date", "contacts"]
+          "body_type", "price", "payment_type", "load_date", "contacts", "urgency"]
 
 FIELD_NAMES = {
     "title": "Название груза",
@@ -31,6 +32,7 @@ FIELD_NAMES = {
     "payment_type": "Оплата",
     "load_date": "Дата загрузки",
     "contacts": "Контакты",
+    "urgency": "Срочность",
 }
 
 # Длины текстовых полей совпадают с VARCHAR в storage.py; для TEXT взяты разумные пределы.
@@ -58,7 +60,8 @@ def today():
 
 def form_context(form: dict) -> dict:
     return {"form": form, "today": today().isoformat(),
-            "body_types": BODY_TYPES, "payment_types": PAYMENT_TYPES}
+            "body_types": BODY_TYPES, "payment_types": PAYMENT_TYPES,
+            "urgency_types": URGENCY_TYPES}
 
 
 @router.get("", response_class=HTMLResponse)
@@ -92,6 +95,7 @@ def order_create(
     payment_type: str = Form(""),
     load_date: str = Form(""),
     contacts: str = Form(""),
+    urgency: str = Form(""),
 ):
     """Функция 1. Публикация заказа. При ошибочных данных показывается страница отказа."""
     role = current_role(request)
@@ -122,6 +126,7 @@ def order_create(
         "payment_type": form["payment_type"] or None,
         "contacts": form["contacts"],
         "load_date": form["load_date"],
+        "urgency": form["urgency"] or URGENCY_DEFAULT,
         "source": SOURCE_SITE,
     })
     return RedirectResponse(f"/orders?created={order['id']}", status_code=303)
@@ -222,6 +227,8 @@ def validate(form: dict) -> list[str]:
         errors.append("Тип кузова нужно выбрать из списка.")
     if form["payment_type"] and form["payment_type"] not in PAYMENT_TYPES:
         errors.append("Способ оплаты нужно выбрать из списка.")
+    if form["urgency"] and form["urgency"] not in URGENCY_TYPES:
+        errors.append("Срочность нужно выбрать из списка: Обычный или Срочный.")
 
     if form["city_from"] and form["city_to"] and form["city_from"].lower() == form["city_to"].lower():
         errors.append("Город отправления и город прибытия совпадают.")

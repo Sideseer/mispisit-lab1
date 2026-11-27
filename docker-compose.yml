@@ -2,7 +2,7 @@ name: mispisit-akhmetzhanov
 
 services:
   app:
-    image: sideseer/mispisit-lab1:0.0.5
+    image: sideseer/mispisit-lab1:0.0.6
     ports:
       - "8080:8080"
     environment:
@@ -24,6 +24,30 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  backup:
+    image: postgres:18
+    profiles: ["tools"]
+    environment:
+      PGPASSWORD: app
+    volumes:
+      - ./backup:/backup
+    command: pg_dump -h db -U app -d app --clean --if-exists -f /backup/app.sql
+    depends_on:
+      db:
+        condition: service_healthy
+
+  restore:
+    image: postgres:18
+    profiles: ["tools"]
+    environment:
+      PGPASSWORD: app
+    volumes:
+      - ./backup:/backup
+    command: psql -h db -U app -d app -f /backup/app.sql
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   dbdata:

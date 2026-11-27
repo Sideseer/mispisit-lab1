@@ -30,6 +30,7 @@
                 <th>Кузов</th>
                 <th class="text-nowrap">Стоимость, руб.</th>
                 <th>Загрузка</th>
+                <th>Срочность</th>
                 <th>Источник</th>
                 <th>Статус</th>
             </tr>
@@ -44,6 +45,7 @@
                 <td>{{ o.body_type or 'любой' }}</td>
                 <td class="text-nowrap">{{ "{:,}".format(o.price).replace(",", " ") }}</td>
                 <td class="text-nowrap">{{ o.load_date.strftime('%d.%m.%Y') }}</td>
+                <td><span class="badge {{ 'text-bg-danger' if o.urgency == 'Срочный' else 'text-bg-light border' }}">{{ o.urgency }}</span></td>
                 <td><span class="badge text-bg-secondary">{{ o.source_name }}</span></td>
                 <td><span class="badge text-bg-success">{{ o.status }}</span></td>
             </tr>
